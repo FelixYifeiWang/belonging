@@ -1,26 +1,18 @@
 // api/blob-upload.js
 import { handleUpload } from '@vercel/blob/client';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+// Edge runtime uses the Web Request/Response API
+export const config = { runtime: 'edge' };
 
+export default async function handler(req) {
   try {
-    // Build a WHATWG Request from the Node req
-    const url = `https://${req.headers.host}${req.url}`;
-    const webRequest = new Request(url, {
-      method: req.method,
-      headers: req.headers, // headers is fine; Vercel normalizes them
-      body: req,            // pass the raw stream body through
-      duplex: 'half'        // needed by some runtimes for streamy bodies
-    });
-
-    // Let @vercel/blob generate a client token & handle policy
-    const upstream = await handleUpload({
-      request: webRequest,
-      onBeforeGenerateToken: async (pathname) => {
+    // Pass the incoming Web Request straight to handleUpload
+    const resp = await handleUpload({
+      request: req,
+      onBeforeGenerateToken: async (pathname /*, clientPayload */) => {
         console.log('[blob-upload] token for', pathname);
         return {
-          // Be permissive while debugging; tighten later
+          // Broad allow-list so image/png, text/markdown, .py, etc. work
           allowedContentTypes: ['image/*', 'video/*', 'audio/*', 'application/*', 'text/*', '*/*'],
           maximumSizeInBytes: 50 * 1024 * 1024,
           tokenPayload: JSON.stringify({ ts: Date.now() })
@@ -35,13 +27,13 @@ export default async function handler(req, res) {
       }
     });
 
-    // Proxy the Response from handleUpload back to the client
-    const body = await upstream.text();
-    res.status(upstream.status);
-    upstream.headers.forEach((v, k) => res.setHeader(k, v));
-    res.send(body);
+    // Important: return the Response that @vercel/blob produced
+    return resp;
   } catch (err) {
     console.error('[blob-upload] error', err);
-    res.status(400).json({ error: err.message });
+    return new Response(JSON.stringify({ error: err?.message || String(err) }), {
+      status: 400,
+      headers: { 'content-type': 'application/json' }
+    });
   }
 }
