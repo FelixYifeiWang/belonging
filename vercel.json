@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "functions": {
-    "api/blob-upload.js": { "runtime": "edge" },
-    "api/*.js": { "runtime": "nodejs20.x" }
-  },
+  "framework": null,
+  "builds": [
+    { "src": "public/**/*", "use": "@vercel/static" },
+    { "src": "api/*.js", "use": "@vercel/node" }
+  ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/public/index.html" }
