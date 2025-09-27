@@ -766,9 +766,12 @@
         });
         
         function handleFiles(files) {
-            uploadedFiles = [...uploadedFiles, ...files];
+            const arr = Array.from(files);
+            uploadedFiles.push(...arr);
+            window.uploadedFiles = uploadedFiles; // keep it synced just in case
             displayFiles();
         }
+
         
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -828,20 +831,16 @@
                 modal.style.display = 'none';
             }
         });
-        
-        // Alternative submit button click handler as backup
-        document.querySelector('.submit-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const form = document.getElementById('belongingForm');
-            if (form.checkValidity()) {
-                document.getElementById('successModal').style.display = 'block';
-            } else {
-                form.reportValidity();
-            }
-        });
     </script>
     <script type="module">
         import { upload } from 'https://esm.sh/@vercel/blob@0.25.0/client?bundle';
+
+        console.log('[Belonging] module loaded; uploadedFiles len =', (window.uploadedFiles || []).length);
+
+        // global error visibility
+        window.addEventListener('error', (e) => {
+        console.error('[Belonging] window error:', e.error || e.message);
+        });
 
         async function canvasToFile(canvas, name = 'signature.png') {
             return new Promise((resolve) =>
