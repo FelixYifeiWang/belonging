@@ -869,54 +869,65 @@
         }
 
         document.getElementById('belongingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        e.preventDefault();
 
-            const participantName = document.getElementById('participantName').value.trim();
-            const participantEmail = document.getElementById('participantEmail').value.trim();
-            const explanation = document.getElementById('explanation').value.trim();
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting… please wait';
 
-            // 1) Upload signature
-            const sigFile = await canvasToFile(document.getElementById('signatureCanvas'));
-            const sigBlob = await uploadViaClient(sigFile);
+        const participantName = document.getElementById('participantName').value.trim();
+        const participantEmail = document.getElementById('participantEmail').value.trim();
+        const explanation = document.getElementById('explanation').value.trim();
 
-            // 2) Upload files
-            const files = await Promise.all(
-                (window.uploadedFiles || []).map(async f => {
-                    const b = await uploadViaClient(f);
-                    return { url: b.url, name: f.name, contentType: f.type, size: f.size };
-                })
-            );
+        // 1) Upload signature
+        const sigFile = await canvasToFile(document.getElementById('signatureCanvas'));
+        const sigBlob = await uploadViaClient(sigFile);
 
-            // 3) Collect members
-            const members = collectMembers();
+        // 2) Upload files
+        const files = await Promise.all(
+            (window.uploadedFiles || []).map(async f => {
+            const b = await uploadViaClient(f);
+            return { url: b.url, name: f.name, contentType: f.type, size: f.size };
+            })
+        );
 
+        // 3) Collect members
+        const members = collectMembers();
+
+        try {
             // 4) Send to backend
             const resp = await fetch('/api/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    participantName,
-                    participantEmail,
-                    explanation,
-                    signatureUrl: sigBlob.url,
-                    files,
-                    members
-                })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                participantName,
+                participantEmail,
+                explanation,
+                signatureUrl: sigBlob.url,
+                files,
+                members
+            })
             });
 
             if (resp.ok) {
-                const json = await resp.json();
-                sessionStorage.setItem('belonging-review', JSON.stringify({
-                    cultureId: json.cultureId,
-                    review: json.review
-                }));
-                window.location.href = '/result.html';
+            const json = await resp.json();
+            sessionStorage.setItem('belonging-review', JSON.stringify({
+                cultureId: json.cultureId,
+                review: json.review
+            }));
+            window.location.href = '/result.html';
             } else {
-                const err = await resp.json().catch(() => ({}));
-                alert('Save failed: ' + (err.error || resp.status));
+            const err = await resp.json().catch(() => ({}));
+            alert('Save failed: ' + (err.error || resp.status));
             }
-
+        } finally {
+            // restore button if still on page
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
         });
+
     </script>
 </body>
 </html>
