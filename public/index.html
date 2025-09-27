@@ -731,6 +731,7 @@
         const fileUploadArea = document.getElementById('fileUploadArea');
         const fileInput = document.getElementById('fileUpload');
         const fileList = document.getElementById('fileList');
+        let uploadedFiles = [];
         window.uploadedFiles = uploadedFiles;
         
         // Prevent default drag behaviors
@@ -840,7 +841,7 @@
         });
     </script>
     <script type="module">
-        import { upload } from 'https://cdn.skypack.dev/@vercel/blob@0.25.0/client';
+        import { upload } from 'https://esm.sh/@vercel/blob@0.25.0/client?bundle';
 
         async function canvasToFile(canvas, name = 'signature.png') {
             return new Promise((resolve) =>
