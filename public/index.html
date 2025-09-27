@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belonging - Culture Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            padding: 80px 20px;
+            color: #1d1d1f;
+            font-size: 17px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 64px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            font-size: 56px;
+            line-height: 1.0714285714;
+            font-weight: 700;
+            letter-spacing: -0.005em;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+        }
+
+        .subtitle {
+            font-size: 19px;
+            line-height: 1.5;
+            font-weight: 400;
+            letter-spacing: .011em;
+            color: #515154;
+            margin-bottom: 64px;
+            max-width: 840px;
+        }
+
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-header {
+            margin-bottom: 36px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            line-height: 1.125;
+            font-weight: 600;
+            letter-spacing: .004em;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .section-description {
+            font-size: 17px;
+            line-height: 1.52;
+            color: #86868b;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            line-height: 1.4;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 17px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 17px;
+            line-height: 1.29412;
+            background: #ffffff;
+            transition: all 200ms ease;
+            font-family: inherit;
+            -webkit-appearance: none;
+            color: #1d1d1f;
+            letter-spacing: -0.022em;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder,
+        textarea::placeholder {
+            color: #86868b;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.15);
+        }
+
+        .signature-container {
+            background: #fafafa;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            padding: 4px;
+            transition: all 200ms ease;
+        }
+
+        .signature-container:hover {
+            border-color: #86868b;
+        }
+
+        .signature-container.active {
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.15);
+        }
+
+        #signatureCanvas {
+            display: block;
+            width: 100%;
+            height: 150px;
+            background: #ffffff;
+            border-radius: 8px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .signature-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-top: 1px solid #d2d2d7;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .signature-hint {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .clear-signature {
+            font-size: 13px;
+            color: #0071e3;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 200ms ease;
+        }
+
+        .clear-signature:hover {
+            background: rgba(0, 113, 227, 0.08);
+        }
+
+        .additional-people {
+            margin-top: 32px;
+            padding: 32px;
+            background: #fbfbfd;
+            border-radius: 12px;
+            border: 1px solid #f0f0f2;
+        }
+
+        .additional-people-header {
+            margin-bottom: 24px;
+        }
+
+        .additional-people-title {
+            font-size: 19px;
+            line-height: 1.4211;
+            font-weight: 600;
+            letter-spacing: .012em;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .person-entry {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 300ms ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .remove-person {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 52px;
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 200ms ease;
+            color: #86868b;
+        }
+
+        .remove-person:hover {
+            background: #ff3b30;
+            border-color: #ff3b30;
+            color: white;
+        }
+
+        .add-person-btn {
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            color: #0071e3;
+            padding: 12px 20px;
+            border-radius: 980px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 200ms ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .add-person-btn:hover {
+            background: #0071e3;
+            border-color: #0071e3;
+            color: white;
+        }
+
+        .file-upload {
+            position: relative;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-upload-area {
+            padding: 48px;
+            border: 2px dashed #d2d2d7;
+            border-radius: 18px;
+            background: #fbfbfd;
+            text-align: center;
+            transition: all 200ms ease;
+            cursor: pointer;
+        }
+
+        .file-upload:hover .file-upload-area {
+            background: #ffffff;
+            border-color: #86868b;
+        }
+
+        .file-upload-area.dragging {
+            background: #e8f4fd;
+            border-color: #0071e3;
+        }
+
+        .upload-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+            background: linear-gradient(180deg, #0071e3 0%, #0077ed 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+        }
+
+        .upload-icon-wrapper svg {
+            width: 36px;
+            height: 36px;
+            color: white;
+        }
+
+        .upload-title {
+            font-size: 19px;
+            line-height: 1.4211;
+            font-weight: 600;
+            letter-spacing: .012em;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .upload-subtitle {
+            font-size: 15px;
+            line-height: 1.4;
+            color: #86868b;
+        }
+
+        .file-list {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .file-list.active {
+            display: block;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #fbfbfd;
+            border: 1px solid #f0f0f2;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            animation: slideDown 300ms ease;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            border: 1px solid #f0f0f2;
+        }
+
+        .file-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #0071e3;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 2px;
+        }
+
+        .file-size {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .file-remove {
+            padding: 8px;
+            background: none;
+            border: none;
+            color: #86868b;
+            cursor: pointer;
+            transition: all 200ms ease;
+            border-radius: 6px;
+        }
+
+        .file-remove:hover {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 18px 48px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms ease;
+            display: block;
+            margin: 48px auto 0;
+            letter-spacing: -0.022em;
+            min-width: 200px;
+        }
+
+        .submit-btn:hover {
+            background: #0077ed;
+            transform: scale(1.02);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: fadeIn 200ms ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 48px;
+            border-radius: 18px;
+            width: 90%;
+            max-width: 480px;
+            text-align: center;
+            animation: scaleIn 200ms ease;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #30d158 0%, #34c759 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 600;
+            letter-spacing: .007em;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .modal-message {
+            font-size: 17px;
+            line-height: 1.47059;
+            color: #86868b;
+            margin-bottom: 32px;
+        }
+
+        .modal-btn {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .modal-btn:hover {
+            background: #0077ed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Belonging</h1>
+        <p class="subtitle">We encourage you to register your existing community on the platform. Once the request is submitted, it will transfer to the 'Pending Phase' where humans, algorithms and peer communities will assess, recognize & approve your submission. It is reasonable to expect one of the following recognition outcomes: Culture, Proto-Culture or Sub-Culture. Please note multiple recognition outcomes may apply to your culture at the same time.<br><br>Please provide us with the following information to the best of your ability. You may want to take some time and collect cultural material along with community members declarations before submitting. It will help us determine the scope of your community and set it akin to others.</p>
+        
+        <form id="belongingForm">
+            <!-- Section 1: People -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">People</h2>
+                    <p class="section-description">Adding your name, email, and a quick e-signature makes you part of this culture in the Belonging system. You'll be listed among its people, and you're free to explore and join other cultures too. You can choose whether other members connect with you openly or anonymously.</p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="participantName">Your Name</label>
+                        <input type="text" id="participantName" name="participantName" placeholder="Your full name as culture member" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="participantEmail">Your Email</label>
+                        <input type="email" id="participantEmail" name="participantEmail" placeholder="your@email.com" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signature">Your E-Signature</label>
+                    <div class="signature-container" id="signatureContainer">
+                        <canvas id="signatureCanvas"></canvas>
+                        <div class="signature-actions">
+                            <span class="signature-hint">Sign to confirm your membership in this culture</span>
+                            <button type="button" class="clear-signature" id="clearSignature">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="additional-people">
+                    <div class="additional-people-header">
+                        <h3 class="additional-people-title">Invite Community Members</h3>
+                        <p class="section-description">Add community members who should also be recognized as part of this culture. They'll receive an invitation to sign and confirm their participation.</p>
+                    </div>
+                    <div id="additionalPeopleContainer"></div>
+                    <button type="button" class="add-person-btn" onclick="addPerson()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Add Community Member
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Section 2: Upload Energy -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Upload Energy</h2>
+                    <p class="section-description">We value the time and care you've invested in growing and sustaining your culture. Please share any materials that reflect this energy — images, texts, media, or other documents linked to your culture. <span style="color: #0071e3; text-decoration: underline; cursor: pointer;">Here you can learn</span> how your contributions will be processed and used within the Belonging system.</p>
+                </div>
+                
+                <div class="file-upload" id="fileUploadContainer">
+                    <input type="file" id="fileUpload" accept="*" multiple>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 10l5-5m0 0l5 5m-5-5v12" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M20 17v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="upload-title">Drop cultural materials here or browse</div>
+                        <div class="upload-subtitle">Images, documents, videos, audio - all formats accepted</div>
+                    </div>
+                </div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+            
+            <!-- Section 3: Explanation -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Your Own Words</h2>
+                    <p class="section-description">Some things about a culture can't be captured by documents alone. This is your space to tell us more. For example: What makes your culture unique in its values, rituals, or inside jokes? How do you gather — online forums, local meetups, annual events? What symbols, foods, music, or sayings are meaningful to you? Which other cultures do you overlap with, borrow from, or collaborate with? What stories, challenges, or milestones have shaped your group? In short: what are you all about? Your words help bring your culture to life within the Belonging system.</p>
+                </div>
+                
+                <div class="form-group">
+                    <textarea id="explanation" name="explanation" placeholder="Share your story..."></textarea>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">Submit for Recognition</button>
+        </form>
+    </div>
+    
+    <!-- Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2 class="modal-title">Submission Received!</h2>
+            <p class="modal-message">Your culture registration is now in the Pending Phase for review and recognition.</p>
+            <button class="modal-btn" onclick="closeModal()">Continue to Dashboard</button>
+        </div>
+    </div>
+    
+    <script>
+        // Signature Canvas
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const signatureContainer = document.getElementById('signatureContainer');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            if (e.type === 'mousedown') {
+                lastX = e.clientX - rect.left;
+                lastY = e.clientY - rect.top;
+            } else if (e.type === 'touchstart') {
+                lastX = e.touches[0].clientX - rect.left;
+                lastY = e.touches[0].clientY - rect.top;
+            }
+            signatureContainer.classList.add('active');
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            let currentX, currentY;
+            
+            if (e.type === 'mousemove') {
+                currentX = e.clientX - rect.left;
+                currentY = e.clientY - rect.top;
+            } else if (e.type === 'touchmove') {
+                currentX = e.touches[0].clientX - rect.left;
+                currentY = e.touches[0].clientY - rect.top;
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            lastX = currentX;
+            lastY = currentY;
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+            signatureContainer.classList.remove('active');
+        }
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        // Clear signature
+        document.getElementById('clearSignature').addEventListener('click', function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+        
+        // Add person functionality
+        let personCount = 0;
+        
+        function addPerson() {
+            personCount++;
+            const container = document.getElementById('additionalPeopleContainer');
+            const personEntry = document.createElement('div');
+            personEntry.className = 'person-entry';
+            personEntry.innerHTML = `
+                <input type="text" placeholder="Community member name" name="person_name_${personCount}">
+                <input type="email" placeholder="their@email.com" name="person_email_${personCount}">
+                <button type="button" class="remove-person" onclick="this.parentElement.remove()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(personEntry);
+        }
+        
+        // File upload with drag and drop
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileUpload');
+        const fileList = document.getElementById('fileList');
+        let uploadedFiles = [];
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight drop area
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, () => fileUploadArea.classList.add('dragging'), false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, () => fileUploadArea.classList.remove('dragging'), false);
+        });
+        
+        // Handle dropped files
+        fileUploadArea.addEventListener('drop', function(e) {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+        
+        // Handle file selection via click
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            uploadedFiles = [...uploadedFiles, ...files];
+            displayFiles();
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            displayFiles();
+        }
+        
+        function displayFiles() {
+            if (uploadedFiles.length === 0) {
+                fileList.classList.remove('active');
+                return;
+            }
+            
+            fileList.classList.add('active');
+            fileList.innerHTML = '';
+            
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 2v6h6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button type="button" class="file-remove" onclick="removeFile(${index})">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        // Form submission
+        document.getElementById('belongingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'block';
+            console.log('Form submitted!');
+            return false;
+        });
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+        
+        // Click outside modal to close
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('successModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Alternative submit button click handler as backup
+        document.querySelector('.submit-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('belongingForm');
+            if (form.checkValidity()) {
+                document.getElementById('successModal').style.display = 'block';
+            } else {
+                form.reportValidity();
+            }
+        });
+    </script>
+</body>
+</html>

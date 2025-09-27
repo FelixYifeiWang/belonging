@@ -1,0 +1,9 @@
+{
+  "name": "belonging",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/blob": "^0.25.0",
+    "pg": "^8.12.0"
+  }
+}
