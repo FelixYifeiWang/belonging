@@ -1,25 +1,33 @@
+// api/blob-upload.js
 import { handleUpload } from '@vercel/blob/client';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+export const config = { runtime: 'edge' };
+
+export default async function handler(req) {
   try {
-    const jsonResponse = await handleUpload({
-      body: req.body,
+    const resp = await handleUpload({
       request: req,
-      onBeforeGenerateToken: async () => ({
-        allowedContentTypes: [
-          'image/png','image/jpeg','image/webp','image/gif',
-          'application/pdf','text/plain','audio/*','video/*',
-          'application/zip','application/octet-stream'
-        ],
-        tokenPayload: JSON.stringify({})
-      }),
+      onBeforeGenerateToken: async (pathname) => {
+        console.log('[blob-upload] token for', pathname);
+        return {
+          allowedContentTypes: ['image/*', 'video/*', 'audio/*', 'application/*', 'text/*', '*/*'],
+          tokenPayload: JSON.stringify({ ts: Date.now() })
+        };
+      },
       onUploadCompleted: async ({ blob }) => {
-        console.log('Blob uploaded:', blob.url);
+        console.log('[blob-upload] uploaded', {
+          url: blob.url,
+          size: blob.size,
+          contentType: blob.contentType
+        });
       }
     });
-    res.status(200).json(jsonResponse);
+    return resp; // MUST return the Response from handleUpload
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('[blob-upload] error', err);
+    return new Response(JSON.stringify({ error: err?.message || String(err) }), {
+      status: 400,
+      headers: { 'content-type': 'application/json' }
+    });
   }
 }
